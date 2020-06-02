@@ -3,10 +3,10 @@ import * as controllers from "../auth/controller/authController.ts";
 
 const auth = new Router();
 
-auth.post("/signin", controllers.signin);
+auth.post("/api/v1.0/auth/signin", controllers.signin);
 
-auth.post("/signup", (context, next) => {
-  context.response.body = "test";
-});
+auth.post("/api/v1.0/auth/signup", controllers.signup);
+
+auth.get("/api/v1.0/auth/check", controllers.check);
 
 export default auth;

@@ -7,6 +7,8 @@ import {
   green,
   cyan,
   isHttpError,
+  oakCors,
+  CorsOptions,
 } from "./deps.ts";
 import auth from "./routes/auth.ts";
 
@@ -52,8 +54,24 @@ app.use(async (context, next) => {
   }
 });
 
-app.use(auth.routes());
+const allowedHosts = [/^https:\/\/blog.io$/, /^http:\/\/localhost/];
 
+// if (env["NODE_ENV"] === "development") {
+//   allowedHosts.push(/^http:\/\/localhost/);
+// }
+
+const corsOptions: CorsOptions = {
+  origin: async (requestOrigin) => {
+    if (!requestOrigin) return false;
+    const valid = allowedHosts.some((regex) => regex.test(requestOrigin));
+    if (!valid) return false;
+    return true; //  Reflect (enable) the requested origin in the CORS response for this origins
+  },
+  credentials: true,
+};
+
+app.use(oakCors(corsOptions)); // Enable CORS for All Routes
+app.use(auth.routes());
 app.use(router.routes());
 app.use(router.allowedMethods());
 
